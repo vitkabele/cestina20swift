@@ -12,7 +12,7 @@ import Foundation
 /// Also respect paging
 public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol {
     
-    public typealias Element = Cestina20Word
+    public typealias Element = Cestina20WordWrapper
     
     /// The current downloaded page.
     /// The indexing on the website starts at 1 so we use zero to indicate that the
@@ -110,7 +110,7 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
         
         /// Current word is located in the actual page
         let wordIndex = currentWord - currentPageFirstWord
-        return currentPageList.count > wordIndex ? await currentPageList[currentWord - currentPageFirstWord].resolve() : nil
+        return currentPageList.count > wordIndex ? currentPageList[currentWord - currentPageFirstWord] : nil
     }
     
     public func makeAsyncIterator() -> Cestina20AsyncWordSequence {

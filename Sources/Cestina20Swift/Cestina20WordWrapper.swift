@@ -14,6 +14,10 @@ import SwiftSoup
 ///
 public actor Cestina20WordWrapper : Identifiable {
     
+    public typealias ID = String
+    
+    public let id : ID
+    
     public var word : String
     
     ///
@@ -83,6 +87,7 @@ public actor Cestina20WordWrapper : Identifiable {
     init(word: String, wordURL: URL) {
         self.url = wordURL
         self.word = word
+        self.id = self.url.lastPathComponent
     }
     
     private func getHtml() async -> SwiftSoup.Document {
@@ -102,7 +107,7 @@ public actor Cestina20WordWrapper : Identifiable {
     /// Resolve the async wrapper and return the final word.
     public func resolve() async -> Cestina20Word {
         return await Cestina20Word(
-            id:  url.lastPathComponent,
+            id:  self.id,
             word: word,
             author: "",
             description: self.description,

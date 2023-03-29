@@ -8,6 +8,8 @@ It is primarily intended for use in the Cestina20 iOS app.
 The API is rather simple wrapper around the [SwiftSoup](...) library, since the official website does not provide any
 kind of web API.
 
+For example usage please see the Cestina20Cli app that is executable product of this package.
+
 ### The word type
 
 The basic building block of the library is the Word type. Because the way in which the API works, only the `word` property is available immediately.
@@ -15,6 +17,7 @@ Other properties are fetched from the page of the particular word and they might
 
 ```swift
 public struct Cestina20Word {
+    public let id : String
     public let word : String;
     public let author : String;
     public let description : String;

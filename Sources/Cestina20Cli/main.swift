@@ -39,7 +39,7 @@ if options.query != nil {
     }
 }
 
-let iterable = words.filter{ $0.likes > options.minLikes && $0.dislikes < options.maxDislikes }.prefix(options.count)
+let iterable = words.map{ await $0.resolve() }.filter{ $0.likes > options.minLikes && $0.dislikes < options.maxDislikes }.prefix(options.count)
 
 if options.json {
     var arr : [Cestina20Word] = []
@@ -57,6 +57,7 @@ if options.json {
         print("\nWord: \(word.word)")
         print(word.description)
         print("\(word.likes) Likes and \(word.dislikes) Dislikes" )
+        
         print(word.example)
     }
 }

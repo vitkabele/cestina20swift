@@ -22,7 +22,7 @@ final class Cestina20SwiftTests: XCTestCase {
         var iterator = mostPopular.makeAsyncIterator()
         
         for mpword in mostPopularWords {
-            let fetched = try await iterator.next()
+            let fetched = try await iterator.next()?.resolve()
             XCTAssertNotNil(fetched)
             XCTAssertEqual(fetched?.word, mpword)
         }
@@ -39,11 +39,11 @@ final class Cestina20SwiftTests: XCTestCase {
         
         var iterator = searchResult.makeAsyncIterator()
         
-        let testovka = try await iterator.next()
+        let testovka = try await iterator.next()?.resolve()
         
         XCTAssertEqual(testovka?.word, "testovka")
         
-        let test = try await iterator.next()
+        let test = try await iterator.next()?.resolve()
         XCTAssertEqual(test?.word, "test")
         
         let nothingLeft = try await iterator.next()
@@ -57,10 +57,11 @@ final class Cestina20SwiftTests: XCTestCase {
         
         var iterator = mp.makeAsyncIterator()
         
-        let w1 = try await iterator.next()
+        let w1 = try await iterator.next()?.resolve()
         
         XCTAssertNotNil(w1)
         XCTAssertEqual(w1?.word, "powerpoint karaoke")
+        XCTAssertEqual(w1?.id, "powerpoint-karaoke")
         
         /// Data when writing the tests
         /// Could change over time, but should not decrease
