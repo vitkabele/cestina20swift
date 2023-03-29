@@ -56,9 +56,11 @@ if options.json {
     for try await word in iterable {
         print("\nWord: \(word.word)")
         print(word.description)
-        print("\(word.likes) Likes and \(word.dislikes) Dislikes" )
+        print("\(word.likes) 👍 👎 \(word.dislikes)" )
         
-        print(word.example)
+        for example in word.examples {
+            print("📝 \(example)")
+        }
     }
 }
 

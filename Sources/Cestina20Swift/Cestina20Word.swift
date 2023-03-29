@@ -24,7 +24,7 @@ public struct Cestina20Word : Identifiable, Encodable {
     public let description : String
     
     /// An example of how the word is used
-    public let example : String
+    public let examples : [String]
     
     /// Date when the word was added to the website
     public let dateAdded : Date

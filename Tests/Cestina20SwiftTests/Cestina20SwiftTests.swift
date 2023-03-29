@@ -67,5 +67,7 @@ final class Cestina20SwiftTests: XCTestCase {
         /// Could change over time, but should not decrease
         XCTAssertGreaterThan(w1!.likes, 2300)
         XCTAssertGreaterThan(w1!.dislikes, 230)
+        
+        XCTAssertEqual(w1?.examples.count, 0)
     }
 }

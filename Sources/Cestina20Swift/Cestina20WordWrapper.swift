@@ -64,19 +64,24 @@ public actor Cestina20WordWrapper : Identifiable {
         }
     }
     
-    private var _example : String?
-    public var example : String {
+    private var _examples : [String]?
+    public var examples : [String] {
         get async {
-            if _example == nil {
-                let paragraphs = try! await getHtml().select(".word p")
-                if paragraphs.count > 2 {
-                    let x = paragraphs.get(1)
-                    _example = try! x.text()
-                } else {
-                    _example = ""
+            if _examples == nil {
+                _examples = []
+                let example = try! await getHtml().select(".word em")
+
+                for e in example {
+                    var raw_text = try! e.text()
+                    let prefix = "Příklad: "
+                    // The prefix is not present when word has more than one example
+                    if raw_text.hasPrefix(prefix) {
+                        raw_text = String(raw_text.dropFirst(prefix.count))
+                    }
+                    _examples!.append(raw_text)
                 }
             }
-            return _example!
+            return _examples!
         }
     }
     
@@ -111,7 +116,7 @@ public actor Cestina20WordWrapper : Identifiable {
             word: word,
             author: "",
             description: self.description,
-            example: await example,
+            examples: await examples,
             dateAdded: Date(),
             likes: await likes,
             dislikes: await dislikes,
