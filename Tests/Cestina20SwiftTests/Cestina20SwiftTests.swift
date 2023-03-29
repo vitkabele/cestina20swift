@@ -69,5 +69,6 @@ final class Cestina20SwiftTests: XCTestCase {
         XCTAssertGreaterThan(w1!.dislikes, 230)
         
         XCTAssertEqual(w1?.examples.count, 0)
+        XCTAssertEqual(w1?.definitions.count, 2)
     }
 }

@@ -23,14 +23,24 @@ public actor Cestina20WordWrapper : Identifiable {
     ///
     /// Cache for the description getter
     ///
-    private var _description : String?
-    public var description : String {
+    private var _definitions : [String]?
+    public var definitions : [String] {
         get async {
-            if _description == nil {
-                _description = try! await getHtml().select(".word p").first()!.text()
+            if _definitions == nil {
+                _definitions = []
+                let defs = try! await getHtml().select(".word p")
+                
+                for d in defs {
+                    if try! d.select("strong, em").count != 0 {
+                        // strong is in the author paragraph
+                        // em is in the examples paragraph
+                        break
+                    }
+                    _definitions?.append(try! d.text())
+                }
             }
 
-            return _description!
+            return _definitions!
         }
     }
     
@@ -115,7 +125,7 @@ public actor Cestina20WordWrapper : Identifiable {
             id:  self.id,
             word: word,
             author: "",
-            description: self.description,
+            definitions: self.definitions,
             examples: await examples,
             dateAdded: Date(),
             likes: await likes,

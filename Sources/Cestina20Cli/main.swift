@@ -54,9 +54,11 @@ if options.json {
     
 } else {
     for try await word in iterable {
-        print("\nWord: \(word.word)")
-        print(word.description)
-        print("\(word.likes) 👍 👎 \(word.dislikes)" )
+        print("\n📰 \(word.word.uppercased()) 👍 \(word.likes) 👎 \(word.dislikes)")
+
+        for definition in word.definitions {
+            print("📖 \(definition)")
+        }
         
         for example in word.examples {
             print("📝 \(example)")

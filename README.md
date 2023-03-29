@@ -20,7 +20,7 @@ public struct Cestina20Word {
     public let id : String
     public let word : String;
     public let author : String;
-    public let description : String;
+    public let definitions : [String];
     public let examples : [String];
     public let dateAdded : Date;
     public let likes : Int;

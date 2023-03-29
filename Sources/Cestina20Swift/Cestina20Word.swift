@@ -20,10 +20,10 @@ public struct Cestina20Word : Identifiable, Encodable {
     /// The word author. Can be null as not every word has an author defined
     public let author : String?
     
-    /// Description of the word
-    public let description : String
+    /// Word definitions
+    public let definitions : [String]
     
-    /// An example of how the word is used
+    /// Examples of the word usage
     public let examples : [String]
     
     /// Date when the word was added to the website
