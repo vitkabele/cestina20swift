@@ -34,7 +34,8 @@ public actor Cestina20WordWrapper : Identifiable {
                     if try! d.select("strong, em").count != 0 {
                         // strong is in the author paragraph
                         // em is in the examples paragraph
-                        break
+                        // Definitions and examples can be interleaved
+                        continue
                     }
                     _definitions?.append(try! d.text())
                 }
