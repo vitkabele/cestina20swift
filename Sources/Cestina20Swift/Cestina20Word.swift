@@ -38,4 +38,15 @@ public struct Cestina20Word : Identifiable, Encodable {
     /// List of similar words listed on the word page
     public let similarWords : [Cestina20Word]
 
+    public init(id: Cestina20Word.ID, word: String, author: String? = nil, definitions: [String], examples: [String], dateAdded: Date, likes: Int, dislikes: Int, similarWords: [Cestina20Word]) {
+        self.id = id
+        self.word = word
+        self.author = author
+        self.definitions = definitions
+        self.examples = examples
+        self.dateAdded = dateAdded
+        self.likes = likes
+        self.dislikes = dislikes
+        self.similarWords = similarWords
+    }
 }
