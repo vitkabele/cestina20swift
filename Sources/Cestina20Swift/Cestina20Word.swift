@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Cestina20Word : Identifiable, Encodable {
+public struct Cestina20Word : Identifiable {
     
     public typealias ID = String
     
@@ -36,9 +36,9 @@ public struct Cestina20Word : Identifiable, Encodable {
     public let dislikes : Int
     
     /// List of similar words listed on the word page
-    public let similarWords : [Cestina20Word]
+    public let similarWords : [C20WordHandle]
 
-    public init(id: Cestina20Word.ID, word: String, author: String? = nil, definitions: [String], examples: [String], dateAdded: Date, likes: Int, dislikes: Int, similarWords: [Cestina20Word]) {
+    public init(id: Cestina20Word.ID, word: String, author: String? = nil, definitions: [String], examples: [String], dateAdded: Date, likes: Int, dislikes: Int, similarWords: [C20WordHandle]) {
         self.id = id
         self.word = word
         self.author = author

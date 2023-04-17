@@ -12,7 +12,7 @@ import Foundation
 /// Also respect paging
 public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol {
     
-    public typealias Element = Cestina20WordWrapper
+    public typealias Element = C20WordHandle
     
     /// The current downloaded page.
     /// The indexing on the website starts at 1 so we use zero to indicate that the
@@ -23,7 +23,7 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
     /// Start index at zero
     private var currentWord : Int = 0
     
-    private var currentPageList : [Cestina20WordWrapper] = []
+    private var currentPageList : [C20WordHandle] = []
     
     /// The global index of the first word on current page.
     private var currentPageFirstWord = 0
@@ -63,7 +63,7 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
             selector: ".search__list li a")
     }
     
-    private func fetchList(page: Int = 0) async -> [Cestina20WordWrapper] {
+    private func fetchList(page: Int = 0) async throws -> [C20WordHandle] {
         
         do {
             var urlComponents = URLComponents(string: baseURLString)
@@ -87,14 +87,15 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
             let words = try doc.select(selector)
             
             return words.map{element in
-                Cestina20WordWrapper(word: try! element.text(), wordURL: try! URL(string: element.attr("href"))!)
+                C20WordHandle(word: try! element.text(), wordURL: try! URL(string: element.attr("href"))!)
             }
         } catch SwiftSoup.Exception.Error(let type, let message) {
             // Parse errors from SwiftSoup
             fatalError("SwiftSoup exception: \(type) \(message)")
         } catch {
             // Remaining errors
-            fatalError("Unknown exception")
+            print("Unknown exception \(error)")
+            throw error
         }
     }
     
@@ -105,7 +106,7 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
             /// Current word is located on the next page
             currentPage += 1
             currentPageFirstWord = currentWord
-            currentPageList = await fetchList(page: currentPage)
+            currentPageList = try await fetchList(page: currentPage)
         }
         
         /// Current word is located in the actual page

@@ -73,14 +73,13 @@ final class Cestina20SwiftTests: XCTestCase {
     }
     
     func testCreateWordManually() async throws {
-        let w = Cestina20WordWrapper(word: "vstupař", wordURL: URL(string: "https://cestina20.cz/slovnik/vstupar/")!)
+        let w = C20WordHandle(word: "vstupař", wordURL: URL(string: "https://cestina20.cz/slovnik/vstupar/")!)
         
-        let defs = await w.definitions
-        let examples = await w.examples
+        let word = try await w.resolve()
         
-        XCTAssertEqual(defs.count, 2)
+        XCTAssertEqual(word.definitions.count, 2)
         
         // Single example can be spanned across multiple <em> tags???
-        XCTAssertEqual(examples.count, 3)
+        XCTAssertEqual(word.examples.count, 3)
     }
 }
