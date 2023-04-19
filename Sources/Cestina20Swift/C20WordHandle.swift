@@ -18,7 +18,7 @@ public class C20WordHandle : Identifiable {
     
     private var url : URL
     
-    init(word: String, wordURL: URL) {
+    public init(word: String, wordURL: URL) {
         self.url = wordURL
         self.word = word
         self.id = self.url.lastPathComponent
