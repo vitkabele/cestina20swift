@@ -39,7 +39,7 @@ if options.query != nil {
     }
 }
 
-let iterable = words.map{ await $0.resolve() }.filter{ $0.likes > options.minLikes && $0.dislikes < options.maxDislikes }.prefix(options.count)
+let iterable = words.map{ try! await $0.resolve() }.filter{ $0.likes > options.minLikes && $0.dislikes < options.maxDislikes }.prefix(options.count)
 
 if options.json {
     var arr : [Cestina20Word] = []

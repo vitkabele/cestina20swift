@@ -8,7 +8,7 @@
 import Foundation
 import SwiftSoup
 
-public class C20WordHandle : Identifiable {
+public class C20WordHandle : Identifiable, Encodable {
     
     public typealias ID = String
     

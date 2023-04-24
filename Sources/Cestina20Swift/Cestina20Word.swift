@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Cestina20Word : Identifiable {
+public struct Cestina20Word : Identifiable, Encodable {
     
     public typealias ID = String
     
