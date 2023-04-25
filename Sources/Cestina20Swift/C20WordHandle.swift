@@ -69,14 +69,14 @@ public class C20WordHandle : Identifiable, Encodable {
         return definitions
     }
     
-    private func getLikes(from html: SwiftSoup.Document) throws -> Int {
+    private func getLikes(from html: SwiftSoup.Document) throws -> Int32 {
         let strval = try html.select(".word .word__rating--up").first()!.text()
-        return Int(strval) ?? 0
+        return Int32(strval) ?? 0
     }
     
-    private func getDislikes(from html: SwiftSoup.Document) throws -> Int {
+    private func getDislikes(from html: SwiftSoup.Document) throws -> Int32 {
         let strval = try html.select(".word .word__rating--down").first()!.text()
-        return Int(strval) ?? 0
+        return Int32(strval) ?? 0
     }
     
     /// TODO: Should we hide the error or propagate it to the user?

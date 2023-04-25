@@ -30,15 +30,15 @@ public struct Cestina20Word : Identifiable, Encodable {
     public let dateAdded : Date
     
     /// How many likes. This property can change over time
-    public let likes : Int
+    public let likes : Int32
     
     /// How many dislikes. This property can change over time
-    public let dislikes : Int
+    public let dislikes : Int32
     
     /// List of similar words listed on the word page
     public let similarWords : [C20WordHandle]
 
-    public init(id: Cestina20Word.ID, word: String, author: String? = nil, definitions: [String], examples: [String], dateAdded: Date, likes: Int, dislikes: Int, similarWords: [C20WordHandle]) {
+    public init(id: Cestina20Word.ID, word: String, author: String? = nil, definitions: [String], examples: [String], dateAdded: Date, likes: Int32, dislikes: Int32, similarWords: [C20WordHandle]) {
         self.id = id
         self.word = word
         self.author = author
