@@ -46,7 +46,7 @@ public class C20WordHandle : Identifiable, Encodable {
             definitions: try getDefinitions(from: html),
             examples: getExamples(from: html),
             /// TODO: We can't fetch real date yet
-            dateAdded: Date(),
+            dateAdded: try getDate(from: html),
             likes: try getLikes(from: html),
             dislikes: try getDislikes(from: html),
             similarWords: [])
@@ -102,5 +102,37 @@ public class C20WordHandle : Identifiable, Encodable {
         }
         
         return examples
+    }
+    
+    
+    struct YoastSchema : Decodable {
+        
+        let schema: String
+        
+        enum CodingKeys: String, CodingKey {
+            case schema = "@schema"
+        }
+    }
+    
+    private func getDate(from html: SwiftSoup.Document) throws -> Date {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd. MM. yyyy"
+        
+        var comonents = DateComponents()
+        comonents.year = 2008
+        comonents.month = 1
+        comonents.day = 1
+        let defaultDate = Calendar.current.date(from: comonents)!
+        
+        guard let date = try html.select(".word strong").last() else {
+            return defaultDate
+        }
+        let dateString = try date.text(trimAndNormaliseWhitespace: true)
+        
+        guard let parsedDate = dateFormatter.date(from: dateString) else {
+            return defaultDate
+        }
+        
+        return parsedDate
     }
 }
