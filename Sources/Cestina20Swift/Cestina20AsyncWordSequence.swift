@@ -14,19 +14,22 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
     
     public typealias Element = C20WordHandle
     
-    /// The current downloaded page.
-    /// The indexing on the website starts at 1 so we use zero to indicate that the
-    /// iteration did not start yet
-    private var currentPage : Int = 0
+    /// This is one-based offset of the current page
+    /// The website aliases pages zero and one, so it is cleaner to also start at 1
+    private var currentPage : Int
+    
+    private var currentPageFirstWord : Int {
+        assert(currentPage >= 1)
+        return (currentPage - 1) * pageSize
+    }
     
     /// Global index of the word.
     /// Start index at zero
-    private var currentWord : Int = 0
+    private var currentWord : Int
     
     private var currentPageList : [C20WordHandle] = []
     
-    /// The global index of the first word on current page.
-    private var currentPageFirstWord = 0
+    private let pageSize : Int
     
     private let baseURLString = "https://www.cestina20.cz"
     
@@ -39,28 +42,38 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
     /// Possible URL query. Used for search requests
     private let queryItems : [URLQueryItem]
     
-    init(fromPage: String = "", queryItems: [URLQueryItem] = [], selector: String) {
+    private init(fromPage: String = "", queryItems: [URLQueryItem] = [], selector: String, pageSize: Int, wordOffset: Int) {
         self.URI = fromPage
         self.selector = selector
         self.queryItems = queryItems
+        // Internal representation references the pages 1 based (same as the website)
+        self.currentPage = wordOffset/pageSize + 1
+        self.pageSize = pageSize
+        self.currentWord = wordOffset
     }
     
-    public static func ofRecent() -> Cestina20AsyncWordSequence {
+    public static func ofRecent(startingFromIndex wordOffset: Int = 0) -> Cestina20AsyncWordSequence {
         return Cestina20AsyncWordSequence(
             fromPage: "/zebricek/nove-pridana/",
-            selector: ".word__title a")
+            selector: ".word__title a",
+            pageSize: 10,
+            wordOffset: wordOffset)
     }
     
-    public static func ofMostPopular() -> Cestina20AsyncWordSequence {
+    public static func ofMostPopular(startingFromIndex wordOffset: Int = 0) -> Cestina20AsyncWordSequence {
         return Cestina20AsyncWordSequence(
             fromPage: "/zebricek/nejoblibenejsi/",
-            selector: ".best__list li a")
+            selector: ".best__list li a",
+            pageSize: 50,
+            wordOffset: wordOffset)
     }
     
-    public static func bySearch(query: String) -> Cestina20AsyncWordSequence {
+    public static func bySearch(query: String, startingFromIndex wordOffset: Int = 0) -> Cestina20AsyncWordSequence {
         return Cestina20AsyncWordSequence(
             queryItems: [URLQueryItem(name: "s", value: query)],
-            selector: ".search__list li a")
+            selector: ".search__list li a",
+            pageSize: 30,
+            wordOffset: wordOffset)
     }
     
     private func fetchList(page: Int = 0) async throws -> [C20WordHandle] {
@@ -101,17 +114,21 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
     
     public mutating func next() async throws -> Element? {
         defer { currentWord += 1 }
+
+        let nextPageFirstWord = currentPageFirstWord + pageSize
         
         if currentPageFirstWord + currentPageList.count <= currentWord  {
             /// Current word is located on the next page
-            currentPage += 1
-            currentPageFirstWord = currentWord
+            if currentWord >= nextPageFirstWord {
+                currentPage += 1
+            }
             currentPageList = try await fetchList(page: currentPage)
         }
         
         /// Current word is located in the actual page
+        assert(currentWord >= currentPageFirstWord)
         let wordIndex = currentWord - currentPageFirstWord
-        return currentPageList.count > wordIndex ? currentPageList[currentWord - currentPageFirstWord] : nil
+        return currentPageList.count > wordIndex ? currentPageList[wordIndex] : nil
     }
     
     public func makeAsyncIterator() -> Cestina20AsyncWordSequence {
