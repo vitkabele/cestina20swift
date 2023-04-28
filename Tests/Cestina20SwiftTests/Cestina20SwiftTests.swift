@@ -3,12 +3,25 @@ import XCTest
 
 final class Cestina20SwiftTests: XCTestCase {
     
+    struct TestWordDescription {
+        let word: String
+        let date: Date
+    }
+    
+    static func ymdDate(year: Int, month: Int, day: Int) -> Date {
+        var comonents = DateComponents()
+        comonents.year = year
+        comonents.month = month
+        comonents.day = day
+        return Calendar.current.date(from: comonents)!
+    }
+    
     private let mostPopularWords = [
-        "powerpoint karaoke",
-        "čvančary",
-        "kurvítko",
-        "nadsrat",
-        "milošekunda"
+        TestWordDescription(word: "powerpoint karaoke", date: ymdDate(year: 2016, month: 9, day: 14)),
+        TestWordDescription(word: "čvančary", date: ymdDate(year: 2017, month: 7, day: 20)),
+        TestWordDescription(word: "kurvítko", date: ymdDate(year: 2009, month: 10, day: 17)),
+        TestWordDescription(word: "nadsrat", date: ymdDate(year: 2018, month: 8, day: 30)),
+        TestWordDescription(word: "milošekunda", date: ymdDate(year: 2014, month: 11, day: 18))
     ]
     
     /// Test that the API properly returns most popular words
@@ -24,7 +37,8 @@ final class Cestina20SwiftTests: XCTestCase {
         for mpword in mostPopularWords {
             let fetched = try await iterator.next()?.resolve()
             XCTAssertNotNil(fetched)
-            XCTAssertEqual(fetched?.word, mpword)
+            XCTAssertEqual(fetched?.word, mpword.word)
+            XCTAssertEqual(fetched!.dateAdded, mpword.date)
         }
     
     }
