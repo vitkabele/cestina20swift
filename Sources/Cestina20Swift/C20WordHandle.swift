@@ -41,8 +41,7 @@ public class C20WordHandle : Identifiable, Encodable {
         return Cestina20Word(
             id:  self.id,
             word: word,
-            /// TODO: We can't fetch real author yet
-            author: "",
+            author: try getAuthor(from: html),
             definitions: try getDefinitions(from: html),
             examples: getExamples(from: html),
             /// TODO: We can't fetch real date yet
@@ -104,16 +103,6 @@ public class C20WordHandle : Identifiable, Encodable {
         return examples
     }
     
-    
-    struct YoastSchema : Decodable {
-        
-        let schema: String
-        
-        enum CodingKeys: String, CodingKey {
-            case schema = "@schema"
-        }
-    }
-    
     private func getDate(from html: SwiftSoup.Document) throws -> Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd. MM. yyyy"
@@ -134,5 +123,16 @@ public class C20WordHandle : Identifiable, Encodable {
         }
         
         return parsedDate
+    }
+    
+    private func getAuthor(from html: SwiftSoup.Document) throws -> String? {
+        let strongs = try html.select(".word strong")
+        
+        if strongs.count > 1 {
+            let authorTag = strongs[strongs.count - 2]
+            return try authorTag.text()
+        }
+        
+        return nil
     }
 }

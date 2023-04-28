@@ -6,6 +6,7 @@ final class Cestina20SwiftTests: XCTestCase {
     struct TestWordDescription {
         let word: String
         let date: Date
+        let author: String
     }
     
     static func ymdDate(year: Int, month: Int, day: Int) -> Date {
@@ -17,11 +18,11 @@ final class Cestina20SwiftTests: XCTestCase {
     }
     
     private let mostPopularWords = [
-        TestWordDescription(word: "powerpoint karaoke", date: ymdDate(year: 2016, month: 9, day: 14)),
-        TestWordDescription(word: "čvančary", date: ymdDate(year: 2017, month: 7, day: 20)),
-        TestWordDescription(word: "kurvítko", date: ymdDate(year: 2009, month: 10, day: 17)),
-        TestWordDescription(word: "nadsrat", date: ymdDate(year: 2018, month: 8, day: 30)),
-        TestWordDescription(word: "milošekunda", date: ymdDate(year: 2014, month: 11, day: 18))
+        TestWordDescription(word: "powerpoint karaoke", date: ymdDate(year: 2016, month: 9, day: 14), author: "@KTweetuje/jkremser"),
+        TestWordDescription(word: "čvančary", date: ymdDate(year: 2017, month: 7, day: 20), author: "Ian Schlendri"),
+        TestWordDescription(word: "kurvítko", date: ymdDate(year: 2009, month: 10, day: 17), author: "med / Vykupitel Pytel"),
+        TestWordDescription(word: "nadsrat", date: ymdDate(year: 2018, month: 8, day: 30), author: "Lukáš Král z Opavy"),
+        TestWordDescription(word: "milošekunda", date: ymdDate(year: 2014, month: 11, day: 18), author: "@chovatel")
     ]
     
     /// Test that the API properly returns most popular words
@@ -38,7 +39,8 @@ final class Cestina20SwiftTests: XCTestCase {
             let fetched = try await iterator.next()?.resolve()
             XCTAssertNotNil(fetched)
             XCTAssertEqual(fetched?.word, mpword.word)
-            XCTAssertEqual(fetched!.dateAdded, mpword.date)
+            XCTAssertEqual(fetched?.dateAdded, mpword.date)
+            XCTAssertEqual(fetched?.author, mpword.author)
         }
     
     }
@@ -49,19 +51,21 @@ final class Cestina20SwiftTests: XCTestCase {
     /// 
     func testSearchResults() async throws {
         
-        let searchResult = Cestina20AsyncWordSequence.bySearch(query: "testovka")
+        let searchResult = Cestina20AsyncWordSequence.bySearch(query: "střihoun")
         
         var iterator = searchResult.makeAsyncIterator()
         
-        let testovka = try await iterator.next()?.resolve()
+        let strihoun = try await iterator.next()?.resolve()
         
-        XCTAssertEqual(testovka?.word, "testovka")
-        
-        let test = try await iterator.next()?.resolve()
-        XCTAssertEqual(test?.word, "test")
-        
-        let nothingLeft = try await iterator.next()
-        XCTAssertNil(nothingLeft)
+        XCTAssertNotNil(strihoun)
+        XCTAssertEqual(strihoun!.word, "střihoun")
+        XCTAssertEqual(strihoun!.dateAdded, Cestina20SwiftTests.ymdDate(year: 2023, month: 3, day: 10))
+        XCTAssertEqual(strihoun!.definitions.count, 1)
+        XCTAssertEqual(strihoun!.examples.count, 0)
+        XCTAssertGreaterThan(strihoun!.likes, 6)
+        XCTAssertGreaterThan(strihoun!.dislikes, 3)
+        // This word was chosen because it has no author.
+        XCTAssertNil(strihoun!.author)
     }
     
     /// Test that fetched data match the expected data
@@ -92,6 +96,8 @@ final class Cestina20SwiftTests: XCTestCase {
         let word = try await w.resolve()
         
         XCTAssertEqual(word.definitions.count, 2)
+        XCTAssertEqual(word.dateAdded, Cestina20SwiftTests.ymdDate(year: 2023, month: 1, day: 15))
+        XCTAssertNil(word.author)
         
         // Single example can be spanned across multiple <em> tags???
         XCTAssertEqual(word.examples.count, 3)
