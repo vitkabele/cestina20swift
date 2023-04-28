@@ -76,6 +76,17 @@ public struct Cestina20AsyncWordSequence : AsyncSequence, AsyncIteratorProtocol 
             wordOffset: wordOffset)
     }
     
+    public static func byStartingLetter(letter: String, startingFromIndex wordOffset: Int = 0) -> Cestina20AsyncWordSequence {
+        // "ch" is a separate letter here...
+        let lowLetter = letter.lowercased()
+        let clearLetter = (("a"..."z").contains(lowLetter) || lowLetter == "ch") ? lowLetter : "ostatni"
+        return Cestina20AsyncWordSequence(
+            fromPage: "/pismeno/\(clearLetter)",
+            selector: ".letter__list li a",
+            pageSize: 150,
+            wordOffset: wordOffset)
+    }
+    
     private func fetchList(page: Int = 0) async throws -> [C20WordHandle] {
         
         do {

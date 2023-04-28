@@ -17,22 +17,38 @@ final class Cestina20SwiftTests: XCTestCase {
         return Calendar.current.date(from: comonents)!
     }
     
-    private let mostPopularWords = [[ // Start index 0
-        TestWordDescription(word: "powerpoint karaoke", date: ymdDate(year: 2016, month: 9, day: 14), author: "@KTweetuje/jkremser"),
-        TestWordDescription(word: "čvančary", date: ymdDate(year: 2017, month: 7, day: 20), author: "Ian Schlendri"),
-        TestWordDescription(word: "kurvítko", date: ymdDate(year: 2009, month: 10, day: 17), author: "med / Vykupitel Pytel"),
-        TestWordDescription(word: "nadsrat", date: ymdDate(year: 2018, month: 8, day: 30), author: "Lukáš Král z Opavy"),
-        TestWordDescription(word: "milošekunda", date: ymdDate(year: 2014, month: 11, day: 18), author: "@chovatel")
-    ], [ // Start index 51 (Start of page)
-        TestWordDescription(word: "lesana", date: ymdDate(year: 2017, month: 4, day: 9), author: "José"),
-        TestWordDescription(word: "korporátní porno", date: ymdDate(year: 2017, month: 9, day: 15), author: "José"),
-    ],[ // Start index 60 (Middle of page)
-        TestWordDescription(word: "alzaheimer", date: ymdDate(year: 2017, month: 11, day: 19), author: "Jenda Šilhavý"),
-        TestWordDescription(word: "memopauza", date: ymdDate(year: 2013, month: 5, day: 2), author: "Děda Louda"),
-    ],[ // Start index 50 (End of page)
-        TestWordDescription(word: "chčaj", date: ymdDate(year: 2017, month: 9, day: 12), author: "Šotouškovi / Jiří Wilson Němec / mezernick"),
-        TestWordDescription(word: "lesana", date: ymdDate(year: 2017, month: 4, day: 9), author: "José"),
-    ]]
+    private let mostPopularWords = [
+        0: [ // Start index 0
+            TestWordDescription(word: "powerpoint karaoke", date: ymdDate(year: 2016, month: 9, day: 14), author: "@KTweetuje/jkremser"),
+            TestWordDescription(word: "čvančary", date: ymdDate(year: 2017, month: 7, day: 20), author: "Ian Schlendri"),
+            TestWordDescription(word: "kurvítko", date: ymdDate(year: 2009, month: 10, day: 17), author: "med / Vykupitel Pytel"),
+            TestWordDescription(word: "nadsrat", date: ymdDate(year: 2018, month: 8, day: 30), author: "Lukáš Král z Opavy"),
+            TestWordDescription(word: "milošekunda", date: ymdDate(year: 2014, month: 11, day: 18), author: "@chovatel")
+           ],
+        50: [ // Start index 51 (Start of page)
+            TestWordDescription(word: "lesana", date: ymdDate(year: 2017, month: 4, day: 9), author: "José"),
+            TestWordDescription(word: "korporátní porno", date: ymdDate(year: 2017, month: 9, day: 15), author: "José"),],
+        59: [ // Start index 60 (Middle of page)
+            TestWordDescription(word: "alzaheimer", date: ymdDate(year: 2017, month: 11, day: 19), author: "Jenda Šilhavý"),
+            TestWordDescription(word: "memopauza", date: ymdDate(year: 2013, month: 5, day: 2), author: "Děda Louda"),
+            ],
+        49: [ // Start index 50 (End of page)
+            TestWordDescription(word: "chčaj", date: ymdDate(year: 2017, month: 9, day: 12), author: "Šotouškovi / Jiří Wilson Němec / mezernick"),
+            TestWordDescription(word: "lesana", date: ymdDate(year: 2017, month: 4, day: 9), author: "José"),
+            ]]
+    
+    private let wordsByLetters : [String:[TestWordDescription]] = [
+        "A": [
+            TestWordDescription(word: "a celá tramvaj tleskala", date: ymdDate(year: 2022, month: 2, day: 14), author: "Tankista"),
+            TestWordDescription(word: "aáčko", date: ymdDate(year: 2020, month: 1, day: 22), author: "OVO"),
+        ],
+        "CH": [
+            TestWordDescription(word: "chabaští", date: ymdDate(year: 2018, month: 12, day: 29), author: "Radek Simkanič"),
+        ],
+        "ostatni": [
+            TestWordDescription(word: "!!!", date: ymdDate(year: 2017, month: 7, day: 3), author: "amur"),
+        ],
+    ]
     
     /// Test that the API properly returns most popular words
     ///
@@ -40,71 +56,37 @@ final class Cestina20SwiftTests: XCTestCase {
     ///
     func testMostPopularWords() async throws {
         
-        let mostPopular = Cestina20AsyncWordSequence.ofMostPopular(startingFromIndex: 0)
-        
-        var iterator = mostPopular.makeAsyncIterator()
-        
-        for mpword in mostPopularWords[0] {
-            let fetched = try await iterator.next()?.resolve()
-            XCTAssertNotNil(fetched)
-            XCTAssertEqual(fetched?.word, mpword.word)
-            XCTAssertEqual(fetched?.dateAdded, mpword.date)
-            XCTAssertEqual(fetched?.author, mpword.author)
-        }
-    
-    }
-    
-    /// Test that the API properly returns most popular words
-    ///
-    /// The test expects that the leaderboard is mostly stable
-    /// Test iteration that starts at page boundary
-    ///
-    func testMostPopularWordsPageTwo() async throws {
-        
-        let mostPopular = Cestina20AsyncWordSequence.ofMostPopular(startingFromIndex: 50)
-        
-        var iterator = mostPopular.makeAsyncIterator()
-        
-        for mpword in mostPopularWords[1] {
-            let fetched = try await iterator.next()?.resolve()
-            XCTAssertNotNil(fetched)
-            XCTAssertEqual(fetched?.word, mpword.word)
-            XCTAssertEqual(fetched?.dateAdded, mpword.date)
-            XCTAssertEqual(fetched?.author, mpword.author)
-        }
-    
-    }
-    
-    /// Test case of iteration that starts in a middle of a page
-    func testMostPopularWordsAtOffset61() async throws {
-        
-        let mostPopular = Cestina20AsyncWordSequence.ofMostPopular(startingFromIndex: 59)
-        
-        var iterator = mostPopular.makeAsyncIterator()
-        
-        for mpword in mostPopularWords[2] {
-            let fetched = try await iterator.next()?.resolve()
-            XCTAssertNotNil(fetched)
-            XCTAssertEqual(fetched?.word, mpword.word)
-            XCTAssertEqual(fetched?.dateAdded, mpword.date)
-            XCTAssertEqual(fetched?.author, mpword.author)
+        for key in mostPopularWords.keys {
+            let mostPopular = Cestina20AsyncWordSequence.ofMostPopular(startingFromIndex: key)
+            
+            var iterator = mostPopular.makeAsyncIterator()
+            
+            for mpword in mostPopularWords[key]! {
+                let fetched = try await iterator.next()?.resolve()
+                XCTAssertNotNil(fetched)
+                XCTAssertEqual(fetched?.word, mpword.word)
+                XCTAssertEqual(fetched?.dateAdded, mpword.date)
+                XCTAssertEqual(fetched?.author, mpword.author)
+            }
         }
     
     }
     
     /// Test case of iteration that crosses the page boundary
-    func testMostPopularWordsEndOfPage() async throws {
+    func testWordsByLetter() async throws {
         
-        let mostPopular = Cestina20AsyncWordSequence.ofMostPopular(startingFromIndex: 49)
-        
-        var iterator = mostPopular.makeAsyncIterator()
-        
-        for mpword in mostPopularWords[3] {
-            let fetched = try await iterator.next()?.resolve()
-            XCTAssertNotNil(fetched)
-            XCTAssertEqual(fetched?.word, mpword.word)
-            XCTAssertEqual(fetched?.dateAdded, mpword.date)
-            XCTAssertEqual(fetched?.author, mpword.author)
+        for key in wordsByLetters.keys {
+            let letterSequence = Cestina20AsyncWordSequence.byStartingLetter(letter: key)
+            
+            var iterator = letterSequence.makeAsyncIterator()
+            
+            for mpword in wordsByLetters[key]! {
+                let fetched = try await iterator.next()?.resolve()
+                XCTAssertNotNil(fetched)
+                XCTAssertEqual(fetched?.word, mpword.word)
+                XCTAssertEqual(fetched?.dateAdded, mpword.date)
+                XCTAssertEqual(fetched?.author, mpword.author)
+            }
         }
     
     }
