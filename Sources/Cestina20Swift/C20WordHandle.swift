@@ -48,7 +48,7 @@ public class C20WordHandle : Identifiable, Encodable {
             dateAdded: try getDate(from: html),
             likes: try getLikes(from: html),
             dislikes: try getDislikes(from: html),
-            similarWords: [])
+            similarWords: try getSimilarWords(from: html))
 
     }
     
@@ -134,5 +134,10 @@ public class C20WordHandle : Identifiable, Encodable {
         }
         
         return nil
+    }
+    
+    private func getSimilarWords(from html: SwiftSoup.Document) throws -> [C20WordHandle] {
+        let similarWords = try html.select(".word--similar li a")
+        return try similarWords.map{ C20WordHandle(word: try $0.text(), wordURL: URL(string: try $0.attr("href"))!) }
     }
 }

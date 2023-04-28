@@ -112,6 +112,7 @@ final class Cestina20SwiftTests: XCTestCase {
         XCTAssertGreaterThan(strihoun!.dislikes, 3)
         // This word was chosen because it has no author.
         XCTAssertNil(strihoun!.author)
+        XCTAssertEqual(strihoun!.similarWords.count, 10)
         
         // The query should have only one result
         let nextItem = try await iterator.next()
